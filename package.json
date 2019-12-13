@@ -1,5 +1,5 @@
 {
-  "name": "@aredotna/bindery",
+  "name": "@broskoski/bindery",
   "version": "2.2.9",
   "description": "Book layout in the browser",
   "main": "dist/bindery.cjs.js",
