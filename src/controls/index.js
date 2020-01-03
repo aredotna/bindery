@@ -26,34 +26,34 @@ class Controls {
       ? null
       : btnMain({ onclick: print }, "Print");
 
-    const paperSizes =
-      options.paperSizes ||
-      (supportsCustomPageSize
-        ? [
-            option({ value: Paper.AUTO }, "Auto"),
-            option({ value: Paper.AUTO_BLEED }, "Auto + Bleed"),
-            option({ value: Paper.AUTO_MARKS }, "Auto + Marks"),
-            option({ value: Paper.LETTER_PORTRAIT }, "Letter Portrait"),
-            option({ value: Paper.LETTER_LANDSCAPE }, "Letter Landscape"),
-            option({ value: Paper.A4_PORTRAIT }, "A4 Portrait"),
-            option({ value: Paper.A4_LANDSCAPE }, "A4 Landscape")
-          ]
-        : [
-            option(
-              { value: Paper.LETTER_PORTRAIT, selected: true },
-              "Default Page Size *"
-            ),
-            option(
-              { disabled: true },
-              "Only Chrome supports custom page sizes. Set in your browser's print dialog instead."
-            )
-          ]
-      ).map(opt => {
-        if (parseInt(opt.value, 10) === initialState.paper) {
-          opt.selected = true;
-        }
-        return opt;
-      });
+    const paperSizes = options.paperSizes
+      ? (supportsCustomPageSize
+          ? [
+              option({ value: Paper.AUTO }, "Auto"),
+              option({ value: Paper.AUTO_BLEED }, "Auto + Bleed"),
+              option({ value: Paper.AUTO_MARKS }, "Auto + Marks"),
+              option({ value: Paper.LETTER_PORTRAIT }, "Letter Portrait"),
+              option({ value: Paper.LETTER_LANDSCAPE }, "Letter Landscape"),
+              option({ value: Paper.A4_PORTRAIT }, "A4 Portrait"),
+              option({ value: Paper.A4_LANDSCAPE }, "A4 Landscape")
+            ]
+          : [
+              option(
+                { value: Paper.LETTER_PORTRAIT, selected: true },
+                "Default Page Size *"
+              ),
+              option(
+                { disabled: true },
+                "Only Chrome supports custom page sizes. Set in your browser's print dialog instead."
+              )
+            ]
+        ).map(opt => {
+          if (parseInt(opt.value, 10) === initialState.paper) {
+            opt.selected = true;
+          }
+          return opt;
+        })
+      : [];
 
     const updateSheetSizeNames = () => {
       if (!supportsCustomPageSize || !paperSizes.length) return;
@@ -78,33 +78,39 @@ class Controls {
     const sheetSizeSelect =
       paperSizes.length > 0 && dropdown({ onchange: updatePaper }, paperSizes);
 
-    const layoutOptions = options.layout || [
-      option({ value: Layout.PAGES }, "1 Page / Sheet"),
-      option({ value: Layout.SPREADS }, "1 Spread / Sheet"),
-      option({ value: Layout.BOOKLET }, "Booklet Sheets")
-    ];
+    const layoutOptions = options.layout
+      ? [
+          option({ value: Layout.PAGES }, "1 Page / Sheet"),
+          option({ value: Layout.SPREADS }, "1 Spread / Sheet"),
+          option({ value: Layout.BOOKLET }, "Booklet Sheets")
+        ]
+      : [];
 
-    const layoutSelect = dropdown(
-      {
-        onchange: e => {
-          actions.setLayout(e.target.value);
-          updateSheetSizeNames();
-        }
-      },
-      layoutOptions.map(opt => {
-        if (parseInt(opt.value, 10) === initialState.layout) {
-          opt.selected = true;
-        }
-        return opt;
-      })
-    );
+    const layoutSelect =
+      layoutOptions.length > 0 &&
+      dropdown(
+        {
+          onchange: e => {
+            actions.setLayout(e.target.value);
+            updateSheetSizeNames();
+          }
+        },
+        layoutOptions.map(opt => {
+          if (parseInt(opt.value, 10) === initialState.layout) {
+            opt.selected = true;
+          }
+          return opt;
+        })
+      );
     const arrangement = layoutOptions.length > 0 && row([layoutSelect]);
-    const marksOptions = options.marks || [
-      option({ value: Marks.NONE }, "No Marks"),
-      option({ value: Marks.CROP, selected: true }, "Crop Marks"),
-      option({ value: Marks.BLEED }, "Bleed Marks"),
-      option({ value: Marks.BOTH }, "Crop and Bleed")
-    ];
+    const marksOptions = options.marks
+      ? [
+          option({ value: Marks.NONE }, "No Marks"),
+          option({ value: Marks.CROP, selected: true }, "Crop Marks"),
+          option({ value: Marks.BLEED }, "Bleed Marks"),
+          option({ value: Marks.BOTH }, "Crop and Bleed")
+        ]
+      : [];
 
     marksSelect =
       marksOptions > 0 &&
@@ -130,37 +136,46 @@ class Controls {
     printBtn && printBtn.classList.add(c("btn-print"));
 
     const optionBarElements = []; // [arrangement, sheetSize, marks]
-    arrangement && optionBarElements.pop(arrangement);
-    sheetSize && optionBarElements.pop(sheetSize);
-    marks && optionBarElements.pop(marks);
+    arrangement && optionBarElements.push(arrangement);
+    sheetSize && optionBarElements.push(sheetSize);
+    marks && optionBarElements.push(marks);
 
     const optionBar = row(optionBarElements);
     optionBar.classList.add(c("print-options"));
 
-    const viewOptions = options.views || [
-      option({ value: Mode.PREVIEW }, "Grid"),
-      option({ value: Mode.FLIPBOOK }, "Flipbook"),
-      option({ value: Mode.PRINT }, "Print Preview")
-    ];
+    const viewOptions = options.views
+      ? [
+          option({ value: Mode.PREVIEW }, "Grid"),
+          option({ value: Mode.FLIPBOOK }, "Flipbook"),
+          option({ value: Mode.PRINT }, "Print Preview")
+        ]
+      : [];
 
-    viewSelect = dropdown(
-      { onchange: e => actions.setMode(e.target.value) },
-      viewOptions.map(opt => {
-        if (opt.value === initialState.mode) {
-          opt.selected = true;
-        }
-        return opt;
-      })
-    );
+    viewSelect =
+      viewOptions.length > 0 &&
+      dropdown(
+        { onchange: e => actions.setMode(e.target.value) },
+        viewOptions.map(opt => {
+          if (opt.value === initialState.mode) {
+            opt.selected = true;
+          }
+          return opt;
+        })
+      );
     const viewRow = row([viewSelect]);
     viewRow.classList.add(c("view-row"));
 
     const allControls = [viewRow, optionBar];
     printBtn && allControls.push(printBtn);
+    options.extraControls && allControls.push(options.extraControls);
 
     this.element = div(c("controls"), allControls);
   }
 }
 
 Controls.option = option;
+Controls.btnMain = btnMain;
+Controls.dropdown = dropdown;
+Controls.row = row;
+Controls.div = div;
 export default Controls;

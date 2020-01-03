@@ -62,9 +62,10 @@ class Bindery {
       controlOptions: T.shape({
         hidePrint: T.bool,
         paperSizes: T.array,
-        layout: T.array,
-        marks: T.array,
-        views: T.array
+        layout: T.bool,
+        marks: T.bool,
+        views: T.bool,
+        extraControls: T.any
       })
     });
 
@@ -77,12 +78,20 @@ class Bindery {
       ? opts.printSetup.marks || Marks.CROP
       : Marks.CROP;
 
+    const defaultControlOptions = {
+      layout: true,
+      paperSizes: true,
+      marks: true,
+      views: true,
+      extraControls: null
+    };
+
     this.viewer = new Viewer({
       pageSetup: this.pageSetup,
       mode: opts.view || Mode.PREVIEW,
       marks: startMarks,
       layout: startLayout,
-      controlOptions: opts.controlOptions
+      controlOptions: { ...defaultControlOptions, ...opts.controlOptions }
     });
 
     this.rules = defaultRules;
