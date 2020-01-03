@@ -136,9 +136,9 @@ class Controls {
     printBtn && printBtn.classList.add(c("btn-print"));
 
     const optionBarElements = []; // [arrangement, sheetSize, marks]
-    arrangement && optionBarElements.pop(arrangement);
-    sheetSize && optionBarElements.pop(sheetSize);
-    marks && optionBarElements.pop(marks);
+    arrangement && optionBarElements.push(arrangement);
+    sheetSize && optionBarElements.push(sheetSize);
+    marks && optionBarElements.push(marks);
 
     const optionBar = row(optionBarElements);
     optionBar.classList.add(c("print-options"));
@@ -167,6 +167,7 @@ class Controls {
 
     const allControls = [viewRow, optionBar];
     printBtn && allControls.push(printBtn);
+    options.extraControls && allControls.push(options.extraControls);
 
     this.element = div(c("controls"), allControls);
   }

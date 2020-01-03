@@ -91,7 +91,7 @@ class Bindery {
       mode: opts.view || Mode.PREVIEW,
       marks: startMarks,
       layout: startLayout,
-      controlOptions: opts.controlOptions
+      controlOptions: { ...defaultControlOptions, ...opts.controlOptions }
     });
 
     this.rules = defaultRules;
